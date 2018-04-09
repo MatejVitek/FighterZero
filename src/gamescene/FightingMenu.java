@@ -83,6 +83,7 @@ public class FightingMenu extends GameScene {
 
 		this.allAiNames = ResourceLoader.getInstance().loadFileNames("./data/ai", ".jar");
 		this.allAiNames.add(0, "KeyBoard");
+		this.allAiNames.add(1, "SRA");
 	}
 
 	@Override
