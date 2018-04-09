@@ -2,6 +2,7 @@ package core;
 
 import java.awt.Font;
 import java.io.File;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ public class Game extends GameManager {
 	 */
 	public Game() {
 		super();
+		InputManager.getInstance().registerAI("SRA", new ai.SRA());
 	}
 
 	/**
@@ -66,6 +68,12 @@ public class Game extends GameManager {
 				break;
 			case "--c2":
 				LaunchSetting.characterNames[1] = getCharacterName(options[++i]);
+				break;
+			case "--r1":
+				FlagSetting.random[0] = true;
+				break;
+			case "--r2":
+				FlagSetting.random[1] = true;
 				break;
 			case "-da":
 				FlagSetting.debugActionFlag = true;
@@ -175,8 +183,8 @@ public class Game extends GameManager {
 			}
 		}
 		Logger.getAnonymousLogger().log(Level.WARNING,
-				characterName + " is does not exist. Please check the set character name.");
-		return "ZEN"; // Default character
+				characterName + " does not exist. Please check the set character name.");
+		return GameSetting.CHARACTERS[new Random().nextInt(GameSetting.CHARACTERS.length)];
 	}
 
 	/**

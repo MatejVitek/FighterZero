@@ -17,30 +17,30 @@ import setting.LaunchSetting;
 import util.LogWriter;
 
 /**
- * リザルト画面のシーンを扱うクラス．
+ * ãƒªã‚¶ãƒ«ãƒˆç”»é�¢ã�®ã‚·ãƒ¼ãƒ³ã‚’æ‰±ã�†ã‚¯ãƒ©ã‚¹ï¼Ž
  */
 public class Result extends GameScene {
 
 	/**
-	 * 各ラウンド終了時のP1, P2の残り体力, 経過時間を格納するリスト．
+	 * å�„ãƒ©ã‚¦ãƒ³ãƒ‰çµ‚äº†æ™‚ã�®P1, P2ã�®æ®‹ã‚Šä½“åŠ›, çµŒé�Žæ™‚é–“ã‚’æ ¼ç´�ã�™ã‚‹ãƒªã‚¹ãƒˆï¼Ž
 	 */
 	private ArrayList<RoundResult> roundResults;
 
 	/**
-	 * 現在の年月日, 時刻を表す文字列．
+	 * ç�¾åœ¨ã�®å¹´æœˆæ—¥, æ™‚åˆ»ã‚’è¡¨ã�™æ–‡å­—åˆ—ï¼Ž
 	 */
 	private String timeInfo;
 
 	/**
-	 * リザルトの表示フレーム数．
+	 * ãƒªã‚¶ãƒ«ãƒˆã�®è¡¨ç¤ºãƒ•ãƒ¬ãƒ¼ãƒ æ•°ï¼Ž
 	 */
 	private int displayedTime;
 
 	/**
-	 * クラスコンストラクタ．
+	 * ã‚¯ãƒ©ã‚¹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼Ž
 	 */
 	public Result() {
-		// 以下4行の処理はgamesceneパッケージ内クラスのコンストラクタには必ず含める
+		// ä»¥ä¸‹4è¡Œã�®å‡¦ç�†ã�¯gamesceneãƒ‘ãƒƒã‚±ãƒ¼ã‚¸å†…ã‚¯ãƒ©ã‚¹ã�®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã�«ã�¯å¿…ã�šå�«ã‚�ã‚‹
 		this.gameSceneName = GameSceneName.FIGHTING_MENU;
 		this.isGameEndFlag = false;
 		this.isTransitionFlag = false;
@@ -53,12 +53,12 @@ public class Result extends GameScene {
 	}
 
 	/**
-	 * 各ラウンドの結果を格納したリスト及び現在の時間情報をセットし, リプレイシーンを初期化するクラスコンストラクタ．
+	 * å�„ãƒ©ã‚¦ãƒ³ãƒ‰ã�®çµ�æžœã‚’æ ¼ç´�ã�—ã�Ÿãƒªã‚¹ãƒˆå�Šã�³ç�¾åœ¨ã�®æ™‚é–“æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã�—, ãƒªãƒ—ãƒ¬ã‚¤ã‚·ãƒ¼ãƒ³ã‚’åˆ�æœŸåŒ–ã�™ã‚‹ã‚¯ãƒ©ã‚¹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼Ž
 	 *
 	 * @param roundResults
-	 *            各ラウンドの結果を格納したリスト
+	 *            å�„ãƒ©ã‚¦ãƒ³ãƒ‰ã�®çµ�æžœã‚’æ ¼ç´�ã�—ã�Ÿãƒªã‚¹ãƒˆ
 	 * @param timeInfo
-	 *            現在の時間情報
+	 *            ç�¾åœ¨ã�®æ™‚é–“æƒ…å ±
 	 */
 	public Result(ArrayList<RoundResult> roundResults, String timeInfo) {
 		super();
@@ -73,7 +73,7 @@ public class Result extends GameScene {
 	public void initialize() {
 		InputManager.getInstance().setSceneName(GameSceneName.RESULT);
 
-		// pointファイルの書き出し
+		// pointãƒ•ã‚¡ã‚¤ãƒ«ã�®æ›¸ã��å‡ºã�—
 		LogWriter.getInstance().outputResult(this.roundResults, LogWriter.CSV, this.timeInfo);
 	}
 
@@ -86,11 +86,11 @@ public class Result extends GameScene {
 				String[] score = new String[] { String.valueOf(this.roundResults.get(i).getRemainingHPs()[0]),
 						String.valueOf(this.roundResults.get(i).getRemainingHPs()[1]) };
 
-				// スコアの描画
+				// ã‚¹ã‚³ã‚¢ã�®æ��ç”»
 				GraphicManager.getInstance().drawString(score[0], positionX[0], 50 + i * 100);
 				GraphicManager.getInstance().drawString(score[1], positionX[1], 50 + i * 100);
 
-				// 勝ちや引き分けに応じてWin !やDrawをスコアの横に印字
+				// å‹�ã�¡ã‚„å¼•ã��åˆ†ã�‘ã�«å¿œã�˜ã�¦Win !ã‚„Drawã‚’ã‚¹ã‚³ã‚¢ã�®æ¨ªã�«å�°å­—
 				switch (getWinPlayer(i)) {
 				case 1:
 					GraphicManager.getInstance().drawString("Win !", positionX[0] - 100, 50 + i * 100);
@@ -116,11 +116,11 @@ public class Result extends GameScene {
 	}
 
 	/**
-	 * P1, P2のどちらがそのラウンドで勝ったかを返す．
+	 * P1, P2ã�®ã�©ã�¡ã‚‰ã�Œã��ã�®ãƒ©ã‚¦ãƒ³ãƒ‰ã�§å‹�ã�£ã�Ÿã�‹ã‚’è¿”ã�™ï¼Ž
 	 *
-	 * @param i ラウンド
+	 * @param i ãƒ©ã‚¦ãƒ³ãƒ‰
 	 *
-	 * @return 0: 引き分け, 1: P1の勝ち, -1: P2の勝ち
+	 * @return 0: å¼•ã��åˆ†ã�‘, 1: P1ã�®å‹�ã�¡, -1: P2ã�®å‹�ã�¡
 	 */
 	private int getWinPlayer(int i) {
 		int[] remainingHPs = this.roundResults.get(i).getRemainingHPs();
@@ -135,9 +135,9 @@ public class Result extends GameScene {
 	}
 
 	/**
-	 * 全AIの総当り対戦が終わったかどうかを返す.
+	 * å…¨AIã�®ç·�å½“ã‚Šå¯¾æˆ¦ã�Œçµ‚ã‚�ã�£ã�Ÿã�‹ã�©ã�†ã�‹ã‚’è¿”ã�™.
 	 *
-	 * @return {@code true} 全AIの総当り対戦が終わった, {@code false} otherwise
+	 * @return {@code true} å…¨AIã�®ç·�å½“ã‚Šå¯¾æˆ¦ã�Œçµ‚ã‚�ã�£ã�Ÿ, {@code false} otherwise
 	 */
 	private boolean endRoundRobin() {
 		return (AIContainer.p1Index + 1) == AIContainer.allAINameList.size()
@@ -145,28 +145,32 @@ public class Result extends GameScene {
 	}
 
 	/**
-	 * Resultシーンから次のシーンに遷移する際の処理を行う.
+	 * Resultã‚·ãƒ¼ãƒ³ã�‹ã‚‰æ¬¡ã�®ã‚·ãƒ¼ãƒ³ã�«é�·ç§»ã�™ã‚‹éš›ã�®å‡¦ç�†ã‚’è¡Œã�†.
 	 */
 	private void endProcess() {
-		// -aや-nを引数にして起動 or Repeat Countを2以上にして起動した場合の処理
+		// -aã‚„-nã‚’å¼•æ•°ã�«ã�—ã�¦èµ·å‹• or Repeat Countã‚’2ä»¥ä¸Šã�«ã�—ã�¦èµ·å‹•ã�—ã�Ÿå ´å�ˆã�®å‡¦ç�†
 		if (FlagSetting.automationFlag || FlagSetting.allCombinationFlag || FlagSetting.py4j) {
 			if (++this.displayedTime > 300) {
-				// まだ繰り返し回数が残っている場合
+				// ã�¾ã� ç¹°ã‚Šè¿”ã�—å›žæ•°ã�Œæ®‹ã�£ã�¦ã�„ã‚‹å ´å�ˆ
 				if (FlagSetting.automationFlag && LaunchSetting.repeatedCount + 1 < LaunchSetting.repeatNumber) {
 					LaunchSetting.repeatedCount++;
+					
+					for (int i = 0; i < LaunchSetting.characterNames.length; i++)
+						if (FlagSetting.random[i])
+							LaunchSetting.characterNames[i] = LaunchSetting.randomCharacter();
 
 					Launcher launcher = new Launcher(GameSceneName.PLAY);
 					this.setTransitionFlag(true);
 					this.setNextGameScene(launcher);
 
-					// まだ全AIの総当り対戦が終わっていない場合
+					// ã�¾ã� å…¨AIã�®ç·�å½“ã‚Šå¯¾æˆ¦ã�Œçµ‚ã‚�ã�£ã�¦ã�„ã�ªã�„å ´å�ˆ
 				} else if (FlagSetting.allCombinationFlag) {
 					if (++AIContainer.p1Index == AIContainer.allAINameList.size()) {
 						AIContainer.p1Index = 0;
 						AIContainer.p2Index++;
 					}
 
-					// 総当り対戦が終了したかどうか
+					// ç·�å½“ã‚Šå¯¾æˆ¦ã�Œçµ‚äº†ã�—ã�Ÿã�‹ã�©ã�†ã�‹
 					if (!endRoundRobin()) {
 						Launcher launcher = new Launcher(GameSceneName.PLAY);
 						this.setTransitionFlag(true);
@@ -184,13 +188,13 @@ public class Result extends GameScene {
 					this.setTransitionFlag(true);
 					this.setNextGameScene(python);
 
-					// 指定した繰り返し回数分対戦が終わった場合
+					// æŒ‡å®šã�—ã�Ÿç¹°ã‚Šè¿”ã�—å›žæ•°åˆ†å¯¾æˆ¦ã�Œçµ‚ã‚�ã�£ã�Ÿå ´å�ˆ
 				} else {
 					this.setGameEndFlag(true);
 				}
 			}
 
-			// 通常の対戦の場合, Enterキーが押されるまでResult画面を表示する
+			// é€šå¸¸ã�®å¯¾æˆ¦ã�®å ´å�ˆ, Enterã‚­ãƒ¼ã�ŒæŠ¼ã�•ã‚Œã‚‹ã�¾ã�§Resultç”»é�¢ã‚’è¡¨ç¤ºã�™ã‚‹
 		} else {
 			String string = "Press Enter key to return menu";
 			GraphicManager.getInstance().drawString(string, GameSetting.STAGE_WIDTH / 2 - string.length() * 5 - 30,
