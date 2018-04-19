@@ -48,3 +48,4 @@ debugData
 #intellJ
 /.idea/*
 *.iml
+*.pyc

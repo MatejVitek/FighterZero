@@ -5,7 +5,7 @@ import setting.FlagSetting;
 import setting.LaunchSetting;
 
 /**
- * Python側で設定した使用キャラクターやAI名といった, ゲームの起動情報を扱うクラス.
+ * Pythonå�´ã�§è¨­å®šã�—ã�Ÿä½¿ç”¨ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚„AIå��ã�¨ã�„ã�£ã�Ÿ, ã‚²ãƒ¼ãƒ ã�®èµ·å‹•æƒ…å ±ã‚’æ‰±ã�†ã‚¯ãƒ©ã‚¹.
  */
 public class PyGame {
 
@@ -27,15 +27,15 @@ public class PyGame {
 	private int num;
 
 	/**
-	 * ゲームが終了したことをPython側に知らせるためのオブジェクト.
+	 * ã‚²ãƒ¼ãƒ ã�Œçµ‚äº†ã�—ã�Ÿã�“ã�¨ã‚’Pythonå�´ã�«çŸ¥ã‚‰ã�›ã‚‹ã�Ÿã‚�ã�®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ.
 	 */
 	public Object end;
 
 	/**
-	 * 引数で指定されたデータでPyGameの初期化を行うクラスコンストラクタ．
+	 * å¼•æ•°ã�§æŒ‡å®šã�•ã‚Œã�Ÿãƒ‡ãƒ¼ã‚¿ã�§PyGameã�®åˆ�æœŸåŒ–ã‚’è¡Œã�†ã‚¯ãƒ©ã‚¹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼Ž
 	 *
 	 * @param manager
-	 *            ゲームの作成やリプレイのロードといった処理を管理するマネージャー
+	 *            ã‚²ãƒ¼ãƒ ã�®ä½œæˆ�ã‚„ãƒªãƒ—ãƒ¬ã‚¤ã�®ãƒ­ãƒ¼ãƒ‰ã�¨ã�„ã�£ã�Ÿå‡¦ç�†ã‚’ç®¡ç�†ã�™ã‚‹ãƒžãƒ�ãƒ¼ã‚¸ãƒ£ãƒ¼
 	 * @param c1
 	 *            P1's character name
 	 * @param c2
@@ -57,12 +57,18 @@ public class PyGame {
 		this.num = num;
 
 		this.end = new Object();
+		
+		for (int i = 0; i < this.characterNames.length; i++)
+			if (this.characterNames[i].toLowerCase().equals("rnd")) {
+				FlagSetting.random[i] = true;
+				this.characterNames[i] = LaunchSetting.randomCharacter();
+			}
 
-		// 起動情報を本体にセットする
+		// èµ·å‹•æƒ…å ±ã‚’æœ¬ä½“ã�«ã‚»ãƒƒãƒˆã�™ã‚‹
 		LaunchSetting.deviceTypes[0] = InputManager.DEVICE_TYPE_AI;
 		LaunchSetting.deviceTypes[1] = InputManager.DEVICE_TYPE_AI;
-		LaunchSetting.characterNames[0] = c1;
-		LaunchSetting.characterNames[1] = c2;
+		LaunchSetting.characterNames[0] = this.characterNames[0];
+		LaunchSetting.characterNames[1] = this.characterNames[1];
 		LaunchSetting.aiNames[0] = name1;
 		LaunchSetting.aiNames[1] = name2;
 		LaunchSetting.repeatNumber = num;
@@ -73,31 +79,31 @@ public class PyGame {
 	}
 
 	/**
-	 * 引数で指定したプレイヤーのキャラクターのデータを返す．
+	 * å¼•æ•°ã�§æŒ‡å®šã�—ã�Ÿãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã�®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã�®ãƒ‡ãƒ¼ã‚¿ã‚’è¿”ã�™ï¼Ž
 	 *
 	 * @param playerNumber
-	 *            プレイヤー番号(true: P1; false: P2)
-	 * @return 指定したプレイヤーのキャラクターのデータ
+	 *            ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå�·(true: P1; false: P2)
+	 * @return æŒ‡å®šã�—ã�Ÿãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã�®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã�®ãƒ‡ãƒ¼ã‚¿
 	 */
 	public String getCharacterName(boolean playerNumber) {
 		return playerNumber ? this.characterNames[0] : this.characterNames[1];
 	}
 
 	/**
-	 * 引数で指定したプレイヤーのAI名を返す．
+	 * å¼•æ•°ã�§æŒ‡å®šã�—ã�Ÿãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã�®AIå��ã‚’è¿”ã�™ï¼Ž
 	 *
 	 * @param playerNumber
-	 *            プレイヤー番号(true: P1; false: P2)
-	 * @return 指定したプレイヤーのAI名
+	 *            ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå�·(true: P1; false: P2)
+	 * @return æŒ‡å®šã�—ã�Ÿãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã�®AIå��
 	 */
 	public String getAIName(boolean playerNumber) {
 		return playerNumber ? this.aiNames[0] : this.aiNames[1];
 	}
 
 	/**
-	 * ゲームの繰り返し回数を取得する．
+	 * ã‚²ãƒ¼ãƒ ã�®ç¹°ã‚Šè¿”ã�—å›žæ•°ã‚’å�–å¾—ã�™ã‚‹ï¼Ž
 	 *
-	 * @return ゲームの繰り返し回数
+	 * @return ã‚²ãƒ¼ãƒ ã�®ç¹°ã‚Šè¿”ã�—å›žæ•°
 	 */
 	public int getRepeatCount() {
 		return this.num;

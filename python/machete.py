@@ -6,32 +6,32 @@ class Machete(object):
 		
 
 	def close(self):
-                pass
+		pass
 
 	def getInformation(self, frameData):
 		# Load the frame data every time getInformation gets called
 		self.frameData = frameData
 		self.cc.setFrameData(self.frameData, self.player)
 		
-        # please define this method when you use FightingICE version 3.20 or later
+	# please define this method when you use FightingICE version 3.20 or later
 	def roundEnd(self, x, y, z):
 		print(x)
 		print(y)
 		print(z)
 
-        # please define this method when you use FightingICE version 4.00 or later
-        def getScreenData(self, sd):
-                pass
+	# please define this method when you use FightingICE version 4.00 or later
+	def getScreenData(self, sd):
+		pass
 
         
 	def initialize(self, gameData, player):
-                # Initializng the command center, the simulator and some other things
-                self.inputKey = self.gateway.jvm.struct.Key()
-                self.frameData = self.gateway.jvm.struct.FrameData()
-                self.cc = self.gateway.jvm.aiinterface.CommandCenter()
-                self.player = player
-                self.gameData = gameData
-                self.simulator = self.gameData.getSimulator()
+		# Initializng the command center, the simulator and some other things
+		self.inputKey = self.gateway.jvm.struct.Key()
+		self.frameData = self.gateway.jvm.struct.FrameData()
+		self.cc = self.gateway.jvm.aiinterface.CommandCenter()
+		self.player = player
+		self.gameData = gameData
+		self.simulator = self.gameData.getSimulator()
 		self.isGameJustStarted = True
 
 		return 0
