@@ -1,8 +1,8 @@
 import sys
-from py4j.java_gateway import JavaGateway, GatewayParameters as GParams, CallbackServerParameters as CSParams
+
 from KickAI import KickAI
 from machete import Machete
-
+from py4j.java_gateway import JavaGateway, GatewayParameters as GParams, CallbackServerParameters as CSParams
 
 ALL_CHARS = "ZEN", "GARNET", "LUD"
 

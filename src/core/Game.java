@@ -154,11 +154,11 @@ public class Game extends GameManager {
 			Launcher launcher = new Launcher(GameSceneName.PLAY);
 			this.startGame(launcher);
 
-			// -Python側で起動するときは, Pythonシーンからゲームを開始する
+		// -Python側で起動するときは, Pythonシーンからゲームを開始する
 		} else if (FlagSetting.py4j) {
 			Python python = new Python();
 			this.startGame(python);
-
+			System.out.println("INIT_DONE");
 			// 上記以外の場合, メニュー画面からゲームを開始する
 		} else {
 			HomeMenu homeMenu = new HomeMenu();
