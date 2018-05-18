@@ -46,6 +46,6 @@ log/out/*
 debugData
 *.ini
 #intellJ
-/.idea/*
+/python/.idea/*
 *.iml
 *.pyc
