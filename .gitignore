@@ -49,3 +49,4 @@ debugData
 /python/.idea/*
 *.iml
 *.pyc
+/.project
