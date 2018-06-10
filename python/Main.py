@@ -11,8 +11,7 @@ ALL_CHARS = "ZEN", "GARNET", "LUD"
 # "RND" for full random, random.choice(ALL_CHARS) for initial random
 CHARS = "ZEN", "ZEN"
 GAME_NUM = 2
-AI1 = PlayAI
-AI2 = PlayAI
+AI1 = AI2 = PlayAI
 FILE1 = FILE2 = 'MyAI.nn'
 
 
@@ -37,18 +36,15 @@ def process_command_line_options():
 	args = ap.parse_args()
 
 	if args.learn:
-		AI1 = LearnAI
-		AI2 = LearnAI
-		FILE1 = None
-		FILE2 = None
+		AI1 = AI2 = LearnAI
+		FILE1 = FILE2 = None
 	else:
 		if args.ai1:
 			AI1 = resolve_import_name(args.ai1)
 		if args.ai2:
 			AI2 = resolve_import_name(args.ai2)
 	if args.file:
-		FILE1 = args.file
-		FILE2 = args.file
+		FILE1 = FILE2 = args.file
 	else:
 		if args.file1:
 			FILE1 = args.file1
@@ -69,6 +65,7 @@ def start_game():
 	manager.registerAI(AI2.__name__, p2)
 
 	print("Starting game")
+
 	game = manager.createGame(*CHARS, AI1.__name__, AI2.__name__, GAME_NUM)
 	manager.runGame(game)
 
