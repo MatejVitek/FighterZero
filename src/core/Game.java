@@ -1,7 +1,7 @@
 package core;
 
 import java.awt.Font;
-import java.io.File;
+import java.io.*;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +26,8 @@ import util.DeleteFiles;
  * ゲームの起動情報を設定し, 開始するゲームシーンを設定するクラス．
  */
 public class Game extends GameManager {
+	
+	public static Process pyProc = null;
 
 	/**
 	 * 親クラスであるGameManagerを初期化するクラスコンストラクタ．
@@ -89,6 +91,8 @@ public class Game extends GameManager {
 				break;
 			case "--py4j":
 				FlagSetting.py4j = true;
+				if (i < options.length - 1 && options[i+1].charAt(0) != '-')
+					LaunchSetting.pythonScript = options[++i];
 				break;
 			case "--port":
 				LaunchSetting.py4jPort = Integer.parseInt(options[++i]);
@@ -158,13 +162,42 @@ public class Game extends GameManager {
 		} else if (FlagSetting.py4j) {
 			Python python = new Python();
 			this.startGame(python);
-			System.out.println("INIT_DONE");
+			if (LaunchSetting.pythonScript != null) {
+				try {
+					pyProc = Runtime.getRuntime().exec("python -u .\\python\\" + LaunchSetting.pythonScript.replace('\'', '"'));
+					new StreamHandler(pyProc.getErrorStream(), System.err).start();
+					new StreamHandler(pyProc.getInputStream(), System.out).start();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			// 上記以外の場合, メニュー画面からゲームを開始する
 		} else {
 			HomeMenu homeMenu = new HomeMenu();
 			this.startGame(homeMenu);
 		}
-
+	}
+	
+	private static class StreamHandler extends Thread {
+		private InputStream in;
+		private PrintStream out;
+		
+		private StreamHandler(InputStream in, PrintStream out) {
+			this.in = in;
+			this.out = out;
+		}
+		
+		public void run() {
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+				String line = null;
+				while ((line = br.readLine()) != null)
+					out.println(line);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**

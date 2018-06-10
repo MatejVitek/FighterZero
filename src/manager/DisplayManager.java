@@ -15,6 +15,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
+import core.Game;
 import setting.FlagSetting;
 import setting.GameSetting;
 
@@ -196,6 +197,7 @@ public class DisplayManager {
 		// Terminate GLFW and free the error callback
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
+		if (Game.pyProc != null) Game.pyProc.destroy();
 		Logger.getAnonymousLogger().log(Level.INFO, "Close FightingICE");
 		System.exit(0);
 	}
