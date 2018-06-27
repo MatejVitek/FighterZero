@@ -1,11 +1,12 @@
-from keras.models import load_model
+from keras.models import load_model, Sequential
+from keras.layers import Input, Dense
+
+import Settings
 
 
 class LearnAI(object):
-	def __init__(self, gateway, init_file=None, save_file=None):
+	def __init__(self, gateway):
 		self.gateway = gateway
-		self._init = init_file
-		self._save = save_file
 
 	def initialize(self, gameData, player):
 		# Initializng the command center, the simulator and some other things
@@ -17,7 +18,7 @@ class LearnAI(object):
 		self.gameData = gameData
 		self.simulator = self.gameData.getSimulator()
 
-		self.nn = self.build_nn()
+		self.nn = self._build_new_nn() if Settings.INI_FILES[Settings.PLAYER] is None else self._init_nn_from_file()
 
 		return 0
 
@@ -53,17 +54,18 @@ class LearnAI(object):
 		print(z)
 
 	def close(self):
-		if self._save is not None:
-			self.nn.save(self._save)
+		if Settings.SAVE_FILES[Settings.PLAYER] is not None:
+			self.nn.save(Settings.SAVE_FILES[Settings.PLAYER])
 
-	def build_nn(self):
-		return self._build_new() if self._init is None else self._init_nn()
+	def _build_new_nn(self):
+		nn = Sequential()
 
-	def _build_new(self):
-		pass
 
-	def _init_nn(self):
-		return load_model(self._init)
+
+		return nn
+
+	def _init_nn_from_file(self):
+		return load_model(Settings.INI_FILES[Settings.PLAYER])
 
 	# please define this method when you use FightingICE version 4.00 or later
 	def getScreenData(self, sd):
