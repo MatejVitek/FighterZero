@@ -36,8 +36,6 @@ public final class LaunchSetting {
 	 * {@code 0} if the device type is keyboardï¼Œor {@code 1} if AI.
 	 */
 	public static char[] deviceTypes = { 0, 0 };
-	
-	public static String pythonScript = null;
 
 	/**
 	 * Pythonã‚’åˆ©ç”¨ã�™ã‚‹ã�¨ã��ã�®ãƒ�ãƒ¼ãƒˆç•ªå�·ï¼Ž

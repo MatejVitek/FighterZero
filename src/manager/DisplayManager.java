@@ -15,51 +15,50 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import core.Game;
 import setting.FlagSetting;
 import setting.GameSetting;
 
 /**
- * ゲームの進行管理を行うマネージャクラス．
+ * ă‚˛ă�Ľă� ă�®é€˛čˇŚç®ˇç�†ă‚’čˇŚă�†ă�žă�Ťă�Ľă‚¸ă�Łă‚Żă�©ă‚ąďĽŽ
  */
 public class DisplayManager {
 
 	/**
-	 * GLFWで使用されるwindow作成用の変数．
+	 * GLFWă�§ä˝żç”¨ă�•ă‚Śă‚‹windowä˝ść��ç”¨ă�®ĺ¤‰ć•°ďĽŽ
 	 */
 	private long window;
 
 	/**
-	 * クラスコンストラクタ．
+	 * ă‚Żă�©ă‚ąă‚łă�łă‚ąă��ă�©ă‚Żă‚żďĽŽ
 	 */
 	public DisplayManager() {
 
 	}
 
 	/**
-	 * ゲームをスタートさせる．<br>
-	 * 1. OpenGL及びウィンドウの初期化を行う．<br>
-	 * 2. ゲームの終了処理命令が来るまで，ゲーム状態の更新，描画処理などのメインループ処理を行う．<br>
-	 * 3. ゲームの終了処理を行ってウィンドウを閉じる．<br>
+	 * ă‚˛ă�Ľă� ă‚’ă‚ąă‚żă�Ľă��ă�•ă�›ă‚‹ďĽŽ<br>
+	 * 1. OpenGLĺŹŠă�łă‚¦ă‚Łă�łă�‰ă‚¦ă�®ĺ�ťćśźĺŚ–ă‚’čˇŚă�†ďĽŽ<br>
+	 * 2. ă‚˛ă�Ľă� ă�®çµ‚äş†ĺ‡¦ç�†ĺ‘˝ä»¤ă�ŚćťĄă‚‹ă�ľă�§ďĽŚă‚˛ă�Ľă� çŠ¶ć…‹ă�®ć›´ć–°ďĽŚćŹŹç”»ĺ‡¦ç�†ă�Şă�©ă�®ă�ˇă‚¤ă�łă�«ă�Ľă�—ĺ‡¦ç�†ă‚’čˇŚă�†ďĽŽ<br>
+	 * 3. ă‚˛ă�Ľă� ă�®çµ‚äş†ĺ‡¦ç�†ă‚’čˇŚă�Łă�¦ă‚¦ă‚Łă�łă�‰ă‚¦ă‚’é–‰ă��ă‚‹ďĽŽ<br>
 	 *
 	 * @param game
-	 *            GameManagerクラスのインスタンス
+	 *            GameManageră‚Żă�©ă‚ąă�®ă‚¤ă�łă‚ąă‚żă�łă‚ą
 	 * @see GameManager
 	 */
 	public void start(GameManager game) {
-		// Window, OpenGLの初期化
+		// Window, OpenGLă�®ĺ�ťćśźĺŚ–
 		initialize();
 
-		// メインループ
+		// ă�ˇă‚¤ă�łă�«ă�Ľă�—
 		gameLoop(game);
 
-		// ゲームの終了処理
+		// ă‚˛ă�Ľă� ă�®çµ‚äş†ĺ‡¦ç�†
 		close();
 
 	}
 
 	/**
-	 * ウィンドウを作成する際の初期化及びOpenGLの初期化処理を行う．
+	 * ă‚¦ă‚Łă�łă�‰ă‚¦ă‚’ä˝ść��ă�™ă‚‹éš›ă�®ĺ�ťćśźĺŚ–ĺŹŠă�łOpenGLă�®ĺ�ťćśźĺŚ–ĺ‡¦ç�†ă‚’čˇŚă�†ďĽŽ
 	 */
 	private void initialize() {
 		// Setup an error callback. The default implementation
@@ -71,13 +70,13 @@ public class DisplayManager {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
 
-		// GLFWの設定
+		// GLFWă�®č¨­ĺ®š
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 		System.setProperty("java.awt.headless", "true");
 
-		// windowの作成
+		// windowă�®ä˝ść��
 		short width = GameSetting.STAGE_WIDTH;
 		short height = GameSetting.STAGE_HEIGHT;
 		this.window = glfwCreateWindow(width, height, "FightingICE", NULL, NULL);
@@ -131,10 +130,10 @@ public class DisplayManager {
 	}
 
 	/**
-	 * ゲームのメインループの処理を行う．
+	 * ă‚˛ă�Ľă� ă�®ă�ˇă‚¤ă�łă�«ă�Ľă�—ă�®ĺ‡¦ç�†ă‚’čˇŚă�†ďĽŽ
 	 *
 	 * @param gm
-	 *            GameManagerクラスのインスタンス
+	 *            GameManageră‚Żă�©ă‚ąă�®ă‚¤ă�łă‚ąă‚żă�łă‚ą
 	 */
 	private void gameLoop(GameManager gm) {
 		glfwSetTime(0.0);
@@ -150,30 +149,30 @@ public class DisplayManager {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		initGL();
 
-		// ゲームマネージャ初期化
+		// ă‚˛ă�Ľă� ă�žă�Ťă�Ľă‚¸ă�Łĺ�ťćśźĺŚ–
 		gm.initialize();
 
 		long lastNanos = System.nanoTime();
 		// Runs the rendering loop until the user has attempted to close the
 		// window.
 		while (!glfwWindowShouldClose(this.window)) {
-			// ゲーム終了の場合,リソースを解放してループを抜ける
+			// ă‚˛ă�Ľă� çµ‚äş†ă�®ĺ ´ĺ��,ă�Şă‚˝ă�Ľă‚ąă‚’č§Łć”ľă�—ă�¦ă�«ă�Ľă�—ă‚’ćŠśă�‘ă‚‹
 			if (gm.isExit()) {
 				gm.close();
 				break;
 			}
 
-			// ゲーム状態の更新
+			// ă‚˛ă�Ľă� çŠ¶ć…‹ă�®ć›´ć–°
 			gm.update();
 
             syncFrameRate(60, lastNanos);
             lastNanos = System.nanoTime();
 
 			if (FlagSetting.enableWindow) {
-				// バックバッファに描画する
+				// ă��ă��ă‚Żă��ă��ă�•ă‚ˇă�«ćŹŹç”»ă�™ă‚‹
 				GraphicManager.getInstance().render();
 
-				// バックバッファとフレームバッファを入れ替える
+				// ă��ă��ă‚Żă��ă��ă�•ă‚ˇă�¨ă�•ă�¬ă�Ľă� ă��ă��ă�•ă‚ˇă‚’ĺ…Ąă‚Ść›żă��ă‚‹
 				glfwSwapBuffers(this.window);
 
 				// Poll for window events. The key callback above will only be
@@ -184,7 +183,7 @@ public class DisplayManager {
 	}
 
 	/**
-	 * ゲームの終了処理を行い，ウィンドウを閉じる.
+	 * ă‚˛ă�Ľă� ă�®çµ‚äş†ĺ‡¦ç�†ă‚’čˇŚă�„ďĽŚă‚¦ă‚Łă�łă�‰ă‚¦ă‚’é–‰ă��ă‚‹.
 	 */
 	private void close() {
 		GraphicManager.getInstance().close();
@@ -197,13 +196,12 @@ public class DisplayManager {
 		// Terminate GLFW and free the error callback
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
-		if (Game.pyProc != null) Game.pyProc.destroy();
 		Logger.getAnonymousLogger().log(Level.INFO, "Close FightingICE");
 		System.exit(0);
 	}
 
 	/**
-	 * OpenGLの初期化処理を行う．
+	 * OpenGLă�®ĺ�ťćśźĺŚ–ĺ‡¦ç�†ă‚’čˇŚă�†ďĽŽ
 	 */
 	private void initGL() {
 		glMatrixMode(GL_PROJECTION);

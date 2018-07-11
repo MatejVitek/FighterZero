@@ -23,14 +23,12 @@ import setting.LaunchSetting;
 import util.DeleteFiles;
 
 /**
- * ゲームの起動情報を設定し, 開始するゲームシーンを設定するクラス．
+ * ă‚˛ă�Ľă� ă�®čµ·ĺ‹•ć�…ĺ ±ă‚’č¨­ĺ®šă�—, é–‹ĺ§‹ă�™ă‚‹ă‚˛ă�Ľă� ă‚·ă�Ľă�łă‚’č¨­ĺ®šă�™ă‚‹ă‚Żă�©ă‚ąďĽŽ
  */
 public class Game extends GameManager {
-	
-	public static Process pyProc = null;
 
 	/**
-	 * 親クラスであるGameManagerを初期化するクラスコンストラクタ．
+	 * č¦Şă‚Żă�©ă‚ąă�§ă�‚ă‚‹GameManageră‚’ĺ�ťćśźĺŚ–ă�™ă‚‹ă‚Żă�©ă‚ąă‚łă�łă‚ąă��ă�©ă‚Żă‚żďĽŽ
 	 */
 	public Game() {
 		super();
@@ -38,10 +36,10 @@ public class Game extends GameManager {
 	}
 
 	/**
-	 * 起動時の引数を基に, ゲームの起動情報をセットする.
+	 * čµ·ĺ‹•ć™‚ă�®ĺĽ•ć•°ă‚’ĺźşă�«, ă‚˛ă�Ľă� ă�®čµ·ĺ‹•ć�…ĺ ±ă‚’ă‚»ă��ă��ă�™ă‚‹.
 	 *
 	 * @param options
-	 *            起動時に入力した全ての引数を格納した配列
+	 *            čµ·ĺ‹•ć™‚ă�«ĺ…ĄĺŠ›ă�—ă�źĺ…¨ă�¦ă�®ĺĽ•ć•°ă‚’ć Ľç´Ťă�—ă�źé…Ťĺ�—
 	 */
 	public void setOptions(String[] options) {
 		// Reads the configurations here
@@ -91,8 +89,6 @@ public class Game extends GameManager {
 				break;
 			case "--py4j":
 				FlagSetting.py4j = true;
-				if (i < options.length - 1 && options[i+1].charAt(0) != '-')
-					LaunchSetting.pythonScript = options[++i];
 				break;
 			case "--port":
 				LaunchSetting.py4jPort = Integer.parseInt(options[++i]);
@@ -138,13 +134,13 @@ public class Game extends GameManager {
 
 	@Override
 	public void initialize() {
-		// 使用フォントの初期化
+		// ä˝żç”¨ă�•ă‚©ă�łă��ă�®ĺ�ťćśźĺŚ–
 		Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
 		GraphicManager.getInstance().setLetterFont(new LetterImage(awtFont, true));
 
 		createLogDirectories();
 
-		// -nまたは-aが指定されたときは, メニュー画面に行かず直接ゲームをLaunchする
+		// -nă�ľă�źă�Ż-aă�ŚćŚ‡ĺ®šă�•ă‚Śă�źă�¨ă�Ťă�Ż, ă�ˇă�‹ă�Ąă�Ľç”»éť˘ă�«čˇŚă�‹ă�šç›´ćŽĄă‚˛ă�Ľă� ă‚’Launchă�™ă‚‹
 		if (FlagSetting.automationFlag || FlagSetting.allCombinationFlag) {
 			if (FlagSetting.allCombinationFlag) {
 				AIContainer.allAINameList = ResourceLoader.getInstance().loadFileNames("./data/ai", ".jar");
@@ -158,56 +154,27 @@ public class Game extends GameManager {
 			Launcher launcher = new Launcher(GameSceneName.PLAY);
 			this.startGame(launcher);
 
-		// -Python側で起動するときは, Pythonシーンからゲームを開始する
+		// -Pythonĺ�´ă�§čµ·ĺ‹•ă�™ă‚‹ă�¨ă�Ťă�Ż, Pythonă‚·ă�Ľă�łă�‹ă‚‰ă‚˛ă�Ľă� ă‚’é–‹ĺ§‹ă�™ă‚‹
 		} else if (FlagSetting.py4j) {
 			Python python = new Python();
 			this.startGame(python);
-			if (LaunchSetting.pythonScript != null) {
-				try {
-					pyProc = Runtime.getRuntime().exec("python -u .\\python\\" + LaunchSetting.pythonScript.replace('\'', '"'));
-					new StreamHandler(pyProc.getErrorStream(), System.err).start();
-					new StreamHandler(pyProc.getInputStream(), System.out).start();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			// 上記以外の場合, メニュー画面からゲームを開始する
+			System.out.println("INIT_DONE");
+			System.out.flush();
+			// ä¸Šč¨�ä»Ąĺ¤–ă�®ĺ ´ĺ��, ă�ˇă�‹ă�Ąă�Ľç”»éť˘ă�‹ă‚‰ă‚˛ă�Ľă� ă‚’é–‹ĺ§‹ă�™ă‚‹
 		} else {
 			HomeMenu homeMenu = new HomeMenu();
 			this.startGame(homeMenu);
 		}
 	}
-	
-	private static class StreamHandler extends Thread {
-		private InputStream in;
-		private PrintStream out;
-		
-		private StreamHandler(InputStream in, PrintStream out) {
-			this.in = in;
-			this.out = out;
-		}
-		
-		public void run() {
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-				String line = null;
-				while ((line = br.readLine()) != null)
-					out.println(line);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 
 	/**
-	 * 引数で指定されたキャラクター名が使用可能キャラクター内にあるかどうかを検索し, ある場合はその名前を返す．<br>
-	 * 無ければ警告文を出し, ZENをデフォルトキャラクターとして返す．
+	 * ĺĽ•ć•°ă�§ćŚ‡ĺ®šă�•ă‚Śă�źă‚­ă�Łă�©ă‚Żă‚żă�Ľĺ�Ťă�Śä˝żç”¨ĺŹŻč�˝ă‚­ă�Łă�©ă‚Żă‚żă�Ľĺ†…ă�«ă�‚ă‚‹ă�‹ă�©ă�†ă�‹ă‚’ć¤śç´˘ă�—, ă�‚ă‚‹ĺ ´ĺ��ă�Żă�ťă�®ĺ�Ťĺ‰Ťă‚’čż”ă�™ďĽŽ<br>
+	 * ç„ˇă�‘ă‚Śă�°č­¦ĺ‘Šć–‡ă‚’ĺ‡şă�—, ZENă‚’ă�‡ă�•ă‚©ă�«ă��ă‚­ă�Łă�©ă‚Żă‚żă�Ľă�¨ă�—ă�¦čż”ă�™ďĽŽ
 	 *
 	 * @param characterName
-	 *            検索するキャラクター名
+	 *            ć¤śç´˘ă�™ă‚‹ă‚­ă�Łă�©ă‚Żă‚żă�Ľĺ�Ť
 	 *
-	 * @return 使用キャラクター名
+	 * @return ä˝żç”¨ă‚­ă�Łă�©ă‚Żă‚żă�Ľĺ�Ť
 	 */
 	private String getCharacterName(String characterName) {
 		for (String character : GameSetting.CHARACTERS) {

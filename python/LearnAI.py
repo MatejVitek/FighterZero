@@ -1,24 +1,26 @@
-from keras.models import load_model, Sequential
-from keras.layers import Input, Dense
-
 import Settings
+from nn import NNBuilder
 
 
 class LearnAI(object):
-	def __init__(self, gateway):
-		self.gateway = gateway
+	def __init__(self):
+		pass
 
 	def initialize(self, gameData, player):
 		# Initializng the command center, the simulator and some other things
-		self.inputKey = self.gateway.jvm.struct.Key()
-		self.frameData = self.gateway.jvm.struct.FrameData()
-		self.cc = self.gateway.jvm.aiinterface.CommandCenter()
+		self.inputKey = Settings.JVM.struct.Key()
+		self.frameData = Settings.JVM.struct.FrameData()
+		self.cc = Settings.JVM.aiinterface.CommandCenter()
 
 		self.player = player
 		self.gameData = gameData
 		self.simulator = self.gameData.getSimulator()
 
-		self.nn = self._build_new_nn() if Settings.INI_FILES[Settings.PLAYER] is None else self._init_nn_from_file()
+		ini = Settings.INI_FILES[self.player]
+		if ini:
+			self.nn = builder.my_nn(Settings.HIDDEN_LAYERS)
+		else:
+			self.nn = builder.load(ini)
 
 		return 0
 
@@ -54,18 +56,8 @@ class LearnAI(object):
 		print(z)
 
 	def close(self):
-		if Settings.SAVE_FILES[Settings.PLAYER] is not None:
-			self.nn.save(Settings.SAVE_FILES[Settings.PLAYER])
-
-	def _build_new_nn(self):
-		nn = Sequential()
-
-
-
-		return nn
-
-	def _init_nn_from_file(self):
-		return load_model(Settings.INI_FILES[Settings.PLAYER])
+		if Settings.SAVE_FILES[self.player] is not None:
+			self.nn.save(Settings.SAVE_FILES[self.player])
 
 	# please define this method when you use FightingICE version 4.00 or later
 	def getScreenData(self, sd):

@@ -28,7 +28,8 @@ public class SRA implements AIInterface {
 	public void processing() {
 		key.empty();
 		if (fd.getEmptyFlag() || fd.getRemainingFramesNumber() <= 0) return;
-		if (fd.getDistanceX() < 100) {
+		System.out.println(fd.getCharacter(!player).getSpeedX() + " " + fd.getCharacter(!player).getSpeedY());
+		/*if (fd.getDistanceX() < 100) {
 			key.A = new Random().nextInt(10) > 4;
 			key.B = new Random().nextInt(10) > 4;
 			key.C = new Random().nextInt(10) > 4;
@@ -36,7 +37,7 @@ public class SRA implements AIInterface {
 		else if (fd.getCharacter(player).getCenterX() < fd.getCharacter(!player).getCenterX())
 			key.R = true;
 		else
-			key.L = true;
+			key.L = true;*/
 	}
 
 	@Override
