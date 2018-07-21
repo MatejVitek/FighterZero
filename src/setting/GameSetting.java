@@ -33,7 +33,7 @@ public class GameSetting {
 	/**
 	 * 1ラウンドの総フレーム数．
 	 */
-	public static final int ROUND_FRAME_NUMBER = 3600;
+	public static int ROUND_FRAME_NUMBER = 3600;
 
 	/**
 	 * ラウンド間の休憩時間．
@@ -58,12 +58,12 @@ public class GameSetting {
 	/**
 	 * 1ラウンドの制限時間(ミリ秒)．
 	 */
-	public static final int ROUND_TIME = 60000;
+	public static int ROUND_TIME = 60000;
 
 	/**
 	 * ラウンド数の上限数．
 	 */
-	public static final int ROUND_MAX = 3;
+	public static int ROUND_MAX = 3;
 
 	/**
 	 * コンボ継続を判定するためのフレーム数．<br>

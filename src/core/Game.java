@@ -55,6 +55,16 @@ public class Game extends GameManager {
 				LaunchSetting.repeatNumber = Integer.parseInt(options[++i]);
 				FlagSetting.automationFlag = true;
 				break;
+			case "--time":
+			case "--round-time":
+				int time = Integer.parseInt(options[++i]);
+				GameSetting.ROUND_TIME = time * 1000;
+				GameSetting.ROUND_FRAME_NUMBER = time * GameSetting.FPS;
+				break;
+			case "-r":
+			case "--rounds":
+				GameSetting.ROUND_MAX = Integer.parseInt(options[++i]);
+				break;
 			case "--a1":
 				LaunchSetting.aiNames[0] = options[++i];
 				LaunchSetting.deviceTypes[0] = InputManager.DEVICE_TYPE_AI;
