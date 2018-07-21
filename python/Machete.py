@@ -15,9 +15,7 @@ class Machete(object):
 		
 	# please define this method when you use FightingICE version 3.20 or later
 	def roundEnd(self, x, y, z):
-		print(x)
-		print(y)
-		print(z)
+		pass
 
 	# please define this method when you use FightingICE version 4.00 or later
 	def getScreenData(self, sd):

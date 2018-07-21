@@ -1,6 +1,10 @@
+import settings
+import time
+
+
 class PlayAI(object):
-	def __init__(self, gateway):
-		self.gateway = gateway
+	def __init__(self):
+		pass
 
 	def close(self):
 		pass
@@ -12,9 +16,7 @@ class PlayAI(object):
 
 	# please define this method when you use FightingICE version 3.20 or later
 	def roundEnd(self, x, y, z):
-		print(x)
-		print(y)
-		print(z)
+		pass
 
 	# please define this method when you use FightingICE version 4.00 or later
 	def getScreenData(self, sd):
@@ -22,9 +24,9 @@ class PlayAI(object):
 
 	def initialize(self, gameData, player):
 		# Initializng the command center, the simulator and some other things
-		self.inputKey = self.gateway.jvm.struct.Key()
-		self.frameData = self.gateway.jvm.struct.FrameData()
-		self.cc = self.gateway.jvm.aiinterface.CommandCenter()
+		self.inputKey = settings.JVM.struct.Key()
+		self.frameData = settings.JVM.struct.FrameData()
+		self.cc = settings.JVM.aiinterface.CommandCenter()
 
 		self.player = player
 		self.gameData = gameData
@@ -37,6 +39,7 @@ class PlayAI(object):
 		return self.inputKey
 
 	def processing(self):
+		print(self.player)
 		# Just compute the input for the current frame
 		if self.frameData.getEmptyFlag() or self.frameData.getRemainingFramesNumber() <= 0:
 			self.isGameJustStarted = True
@@ -50,7 +53,9 @@ class PlayAI(object):
 		self.cc.skillCancel()
 
 		# Just spam kick
+		time.sleep(1)
 		self.cc.commandCall("B")
+		self.inputKey = self.cc.getSkillKey()
 
 	# This part is mandatory
 	class Java:

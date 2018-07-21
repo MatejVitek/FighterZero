@@ -3,7 +3,7 @@ from time import sleep
 from py4j.java_gateway import JavaGateway, GatewayParameters, CallbackServerParameters, get_field
 from KickAI import KickAI
 from DisplayInfo import DisplayInfo
-from machete import Machete
+from Machete import Machete
 
 
 def check_args(args):

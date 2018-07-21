@@ -3,8 +3,8 @@ import os
 import subprocess
 import argparse
 
-import Settings
-from Settings import P
+import settings
+from settings import P
 from LearnAI import LearnAI
 from PlayAI import PlayAI
 from py4j.java_gateway import JavaGateway, GatewayParameters as GParams, CallbackServerParameters as CSParams
@@ -31,13 +31,14 @@ def main():
 	if len(sys.argv) > 1:
 		process_command_line_options()
 	if wait_for_server():
+		settings.JVM = gateway.jvm
 		run_game()
 
 
 def start_java_server():
 	print("Starting Java server...")
 	os.chdir('..\\')
-	return subprocess.Popen(JAVA_CMD + Settings.JAVA_ARGS, stdout=subprocess.PIPE, universal_newlines=True)
+	return subprocess.Popen(JAVA_CMD + settings.JAVA_ARGS, stdout=subprocess.PIPE, universal_newlines=True)
 
 
 def wait_for_server():
@@ -72,52 +73,52 @@ def process_command_line_options():
 	args = ap.parse_args()
 
 	if args.number:
-		Settings.GAME_NUM = args.number
+		settings.GAME_NUM = args.number
 	if args.character1:
-		Settings.CHARS[P[0]] = args.character1
+		settings.CHARS[P[0]] = args.character1
 	if args.character2:
-		Settings.CHARS[P[1]] = args.character2
+		settings.CHARS[P[1]] = args.character2
 
 	if args.learn:
 		for p in P:
-			Settings.AI[p] = LearnAI
-			Settings.INI_FILES[p] = None
-			Settings.SAVE_FILES[p] = None
-			Settings.SAVE_FILE = Settings.DEF_NN_FILE
+			settings.AI[p] = LearnAI
+			settings.INI_FILES[p] = None
+			settings.SAVE_FILES[p] = None
+			settings.SAVE_FILE = settings.DEF_NN_FILE
 	elif args.play:
 		for p in P:
-			Settings.AI[p] = PlayAI
-			Settings.INI_FILES[p] = Settings.DEF_NN_FILE
-			Settings.SAVE_FILES[p] = None
-			Settings.SAVE_FILE = None
+			settings.AI[p] = PlayAI
+			settings.INI_FILES[p] = settings.DEF_NN_FILE
+			settings.SAVE_FILES[p] = None
+			settings.SAVE_FILE = None
 	else:
 		if args.ai1:
-			Settings.AI[P[0]] = args.ai1
-			Settings.INI_FILES[P[0]] = None
-			Settings.SAVE_FILES[P[0]] = Settings.DEF_NN_FILE
-			Settings.SAVE_FILE = None
+			settings.AI[P[0]] = args.ai1
+			settings.INI_FILES[P[0]] = None
+			settings.SAVE_FILES[P[0]] = settings.DEF_NN_FILE
+			settings.SAVE_FILE = None
 		if args.ai2:
-			Settings.AI[P[1]] = args.ai2
-			Settings.INI_FILES[P[1]] = None
-			Settings.SAVE_FILES[P[1]] = Settings.DEF_NN_FILE
-			Settings.SAVE_FILE = None
+			settings.AI[P[1]] = args.ai2
+			settings.INI_FILES[P[1]] = None
+			settings.SAVE_FILES[P[1]] = settings.DEF_NN_FILE
+			settings.SAVE_FILE = None
 
 	if args.file:
 		for p in P:
-			Settings.INI_FILES[p] = args.file
-		Settings.SAVE_FILE = args.file
+			settings.INI_FILES[p] = args.file
+		settings.SAVE_FILE = args.file
 	else:
 		if args.file1:
-			Settings.INI_FILES[P[0]] = Settings.SAVE_FILES[P[0]] = args.file1
+			settings.INI_FILES[P[0]] = settings.SAVE_FILES[P[0]] = args.file1
 		if args.file2:
-			Settings.INI_FILES[P[1]] = Settings.SAVE_FILES[P[1]] = args.file2
+			settings.INI_FILES[P[1]] = settings.SAVE_FILES[P[1]] = args.file2
 
 	if args.save:
-		Settings.SAVE_FILE = args.save
+		settings.SAVE_FILE = args.save
 	if args.save1:
-		Settings.SAVE_FILES[P[0]] = args.save1
+		settings.SAVE_FILES[P[0]] = args.save1
 	if args.save2:
-		Settings.SAVE_FILES[P[1]] = args.save2
+		settings.SAVE_FILES[P[1]] = args.save2
 
 
 def run_game():
@@ -125,27 +126,26 @@ def run_game():
 
 	temp_save = {P[0]: False, P[1]: False}
 	for p in P:
-		if isinstance(Settings.AI[p], str):
-			Settings.AI[p] = resolve_import_name(Settings.AI[p])
-		if Settings.AI[p] == LearnAI and Settings.SAVE_FILES[p] is None:
+		if isinstance(settings.AI[p], str):
+			settings.AI[p] = resolve_import_name(settings.AI[p])
+		if settings.AI[p] == LearnAI and settings.SAVE_FILES[p] is None:
 			temp_save[p] = True
-			Settings.SAVE_FILES[p] = Settings.SAVE_FILE[::-1].replace('.', f".{1 if p else 2}P_", 1)[::-1]
-		if Settings.AI[p] in (LearnAI, PlayAI):
-			Settings.JVM = gateway.jvm
-			manager.registerAI(Settings.AI[p].__name__, Settings.AI[p]())
+			settings.SAVE_FILES[p] = settings.SAVE_FILE[::-1].replace('.', f".{1 if p else 2}P_", 1)[::-1]
+		if settings.AI[p] in (LearnAI, PlayAI):
+			manager.registerAI(settings.AI[p].__name__, settings.AI[p]())
 		else:
-			manager.registerAI(Settings.AI[p].__name__, Settings.AI[p](gateway))
+			manager.registerAI(settings.AI[p].__name__, settings.AI[p](gateway))
 
-	chars, ais = zip(*((Settings.CHARS[p], Settings.AI[p].__name__) for p in P))
-	game = manager.createGame(*chars, *ais, Settings.GAME_NUM)
+	chars, ais = zip(*((settings.CHARS[p], settings.AI[p].__name__) for p in P))
+	game = manager.createGame(*chars, *ais, settings.GAME_NUM)
 	print("Game starting...")
 	manager.runGame(game)
 
-	if all(Settings.AI[p] == LearnAI for p in P) and Settings.SAVE_FILE is not None:
-		save_better_network(Settings.SAVE_FILE, *(Settings.SAVE_FILES[p] for p in P))
+	if all(settings.AI[p] == LearnAI for p in P) and settings.SAVE_FILE is not None:
+		save_better_network(settings.SAVE_FILE, *(settings.SAVE_FILES[p] for p in P))
 	for p in P:
 		if temp_save[p]:
-			os.remove(Settings.SAVE_FILES[p])
+			os.remove(settings.SAVE_FILES[p])
 
 	print("Game ending.")
 	sys.stdout.flush()
@@ -172,7 +172,7 @@ def close_server():
 
 if __name__ == '__main__':
 	server = start_java_server()
-	gateway = JavaGateway(gateway_parameters=GParams(port=Settings.PORT), callback_server_parameters=CSParams())
+	gateway = JavaGateway(gateway_parameters=GParams(port=settings.PORT), callback_server_parameters=CSParams())
 	manager = gateway.entry_point
 	try:
 		main()
