@@ -8,12 +8,15 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.io.File;
 import java.nio.ByteBuffer;
-
+import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
-
+import fighting.Character;
 import manager.GraphicManager;
+import setting.FlagSetting;
 import setting.GameSetting;
+import setting.LaunchSetting;
 
 /**
  * The class dealing with the screen information such as the game screen's image
@@ -59,6 +62,32 @@ public class ScreenData {
 	public ScreenData(ScreenData screenData) {
 		this.displayByteBuffer = screenData.getDisplayByteBuffer();
 		this.displayBufferedImage = screenData.getDisplayBufferedImage();
+	}
+	
+	public void edit(FrameData old, FrameData now) {
+		CharacterData[] newC = {now.getCharacter(true), now.getCharacter(false)};
+		CharacterData[] oldC = {old.getCharacter(true), old.getCharacter(false)}; 
+		int newHP1 = newC[0].getHp();
+		int oldHP1 = oldC[0].getHp();
+		int newHP2 = newC[1].getHp();
+		int oldHP2 = oldC[1].getHp();
+		
+		this.displayByteBuffer.rewind();
+		byte[] buffer = new byte[this.displayByteBuffer.capacity()];
+		this.displayByteBuffer.get(buffer);
+		
+		for (int rgb = 0; rgb < 3; rgb++)
+			for (int y = 75; y < 95; y++) {
+				for (int x = 130 + newHP1; x < 130 + oldHP1; x++)
+					buffer[3 * (y * GameSetting.STAGE_WIDTH + x) + rgb] = (byte)(0.2f * 255);
+					// this.displayByteBuffer.put(3 * (y * GameSetting.STAGE_WIDTH + x) + rgb, (byte)(0.2f * 255));
+				for (int x = 530 + newHP2; x < 530 + oldHP2; x++)
+					buffer[3 * (y * GameSetting.STAGE_WIDTH + x) + rgb] = (byte)(0.2f * 255);
+					// this.displayByteBuffer.put(3 * (y * GameSetting.STAGE_WIDTH + x) + rgb, (byte)(0.2f * 255));
+		}
+		this.displayBufferedImage = createDisplayBufferedImage(buffer);
+		this.displayByteBuffer = ByteBuffer.wrap(buffer);
+		this.displayByteBuffer.rewind();
 	}
 
 	/**
@@ -166,30 +195,30 @@ public class ScreenData {
 		return pixels;
 	}
 
-//	private BufferedImage createDisplayBufferedImage(){
-//		int width = GameSetting.STAGE_WIDTH;
-//		int height = GameSetting.STAGE_HEIGHT;
-//		int bpp = 3;
-//		BufferedImage src = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-//
-//		for (int x = 0; x < width; x++) {
-//			for (int y = 0; y < height; y++) {
-//				int i = (x + width * y) * bpp;
-//				int r = this.displayByteBuffer.get(i) & 0xFF;
-//				int g = this.displayByteBuffer.get(i + 1) & 0xFF;
-//				int b = this.displayByteBuffer.get(i + 2) & 0xFF;
-//				src.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
-//			}
-//		}
-//		boolean result = false;
-//
-//		try {
-//		  result = ImageIO.write(src, "jpeg", new File("sample.jpeg"));
-//		} catch (Exception e) {
-//		  e.printStackTrace();
-//		  result = false;
-//		}
-//		return src;
-//	}
+	private BufferedImage createDisplayBufferedImage(byte[] buffer){
+		int width = GameSetting.STAGE_WIDTH;
+		int height = GameSetting.STAGE_HEIGHT;
+		int bpp = 3;
+		BufferedImage src = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				int i = (x + width * y) * bpp;
+				int r = buffer[i] & 0xFF;
+				int g = buffer[i+1] & 0xFF;
+				int b = buffer[i+2] & 0xFF;
+				src.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
+			}
+		}
+		boolean result = false;
+
+		try {
+		  result = ImageIO.write(src, "jpeg", new File("sample.jpeg"));
+		} catch (Exception e) {
+		  e.printStackTrace();
+		  result = false;
+		}
+		return src;
+	}
 
 }
