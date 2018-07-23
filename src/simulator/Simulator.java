@@ -8,7 +8,6 @@ import enumerate.Action;
 import fighting.Motion;
 import struct.FrameData;
 import struct.GameData;
-import struct.ScreenData;
 
 /**
  * The class of the simulator.
@@ -98,57 +97,5 @@ public class Simulator {
 
 		return simFighting.createFrameData(nowFrame, frameData.getRound());
 	}
-	
-	public Pair mySimulate(FrameData frameData, ScreenData screenData, boolean playerNumber, Deque<Action> myAct, Deque<Action> oppAct,
-			int simulationLimit) {
 
-		// Creates deep copy of each action's list
-		ArrayList<Deque<Action>> tempActionList = new ArrayList<Deque<Action>>(2);
-		Deque<Action> tempP1Act = ((playerNumber ? myAct : oppAct) == null) ? null
-				: new LinkedList<Action>(playerNumber ? myAct : oppAct);
-		Deque<Action> tempP2Act = ((!playerNumber ? myAct : oppAct) == null) ? null
-				: new LinkedList<Action>(!playerNumber ? myAct : oppAct);
-		tempActionList.add(tempP1Act);
-		tempActionList.add(tempP2Act);
-
-		ArrayList<ArrayList<Motion>> tempMotionList = new ArrayList<ArrayList<Motion>>(2);
-		ArrayList<Motion> p1MotionData = this.gameData.getMotion(playerNumber ? true : false);
-		ArrayList<Motion> p2MotionData = this.gameData.getMotion(!playerNumber ? true : false);
-		tempMotionList.add(p1MotionData);
-		tempMotionList.add(p2MotionData);
-
-		int nowFrame = frameData.getFramesNumber();
-
-		SimFighting simFighting = new SimFighting();
-		simFighting.initialize(tempMotionList, tempActionList, new FrameData(frameData), playerNumber);
-
-		for (int i = 0; i < simulationLimit; i++) {
-			simFighting.processingFight(nowFrame);
-			nowFrame++;
-		}
-		
-		FrameData fd = simFighting.createFrameData(nowFrame, frameData.getRound());
-		ScreenData sd = new ScreenData(screenData);
-		// sd.edit(frameData, fd);
-
-		return new Pair(fd, sd);
-	}
-
-	public static class Pair {
-		public final FrameData fd;
-		public final ScreenData sd;
-		
-		private Pair(FrameData fd, ScreenData sd) {
-			this.fd = fd;
-			this.sd = sd;
-		}
-		
-		public FrameData fd() {
-			return this.fd;
-		}
-		
-		public ScreenData sd() {
-			return this.sd;
-		}
-	}
 }
