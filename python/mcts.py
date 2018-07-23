@@ -28,6 +28,7 @@ class MCTS(object):
 			print("M1", time.perf_counter(), flush=True)
 			self.root.search()
 
+		print(f"Number of MCTS simulations: {self.root.N}", flush=True)
 		N = np.array([self.root.edges[action].N if action in self.root.edges else 0 for action in settings.ALL_MOVES])
 		N = N.astype(float)
 
@@ -115,7 +116,7 @@ class Node(object):
 		if self.input_vector is None:
 			self.input_vector = self.mcts.input_builder.build(self.state)
 		print("M6", time.perf_counter(), flush=True)
-		self.P, v = self.mcts.nn.fast_predict(self.input_vector)
+		self.P, v = self.mcts.nn.predict(self.input_vector)
 		print("M7", time.perf_counter(), flush=True)
 		self.valid_mask = game.valid_moves_mask(self.state, self.player)
 		print("M8", time.perf_counter(), flush=True)
