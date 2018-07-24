@@ -7,26 +7,18 @@ from keras.layers import Input, Dense
 from py4j.java_gateway import JavaGateway, GatewayParameters as GParams, CallbackServerParameters as CSParams
 import settings
 from main import JAVA_CMD
-from nn import DataBasedNN
+from nn import DataNN, ImageNN
 from mcts import MCTS
 
 
 def test():
 	gd = settings.JVM.struct.GameData()
 	fd = FrameData()
-	nn = DataBasedNN(
-		input_size=settings.INPUT_SIZE,
-		output_size=len(settings.ALL_MOVES),
-		n_hidden_layers=settings.HIDDEN_LAYERS,
-		reg_const=settings.REG_CONST,
-		dropout_rate=settings.DROPOUT_RATE,
-		lr=settings.LEARNING_RATE,
-		momentum=settings.MOMENTUM
-	)
+	nn = ImageNN()
 	nn.build()
-	nn.save_weights('MyNN.h5')
+	os.chdir('.\\data\\networks')
 	in_v = InputBuilder().build('asdf')
-	print(nn.fast_predict(in_v))
+	print(nn.predict(in_v))
 	settings.TIME_LIMIT = 5
 	mcts = MCTS(Simulator(), nn, InputBuilder())
 	mcts.search(FrameData(), in_v, True)
@@ -119,7 +111,7 @@ class InputBuilder(object):
 def start_java_server():
 	print("Starting Java server...")
 	os.chdir('..\\')
-	return subprocess.Popen(JAVA_CMD + settings.JAVA_ARGS, stdout=subprocess.PIPE, universal_newlines=True)
+	return subprocess.Popen(JAVA_CMD + settings.JAVA_ARGS(), stdout=subprocess.PIPE, universal_newlines=True)
 
 
 def wait_for_server():
@@ -139,7 +131,8 @@ def close_gateway():
 
 
 def close_server():
-	server.kill()
+	server.terminate()
+	server.wait()
 
 
 def main():

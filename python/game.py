@@ -4,7 +4,7 @@ import settings
 def get_round_reward(my_hp, opp_hp, frames_left):
 	if frames_left > 0 and my_hp > 0 and opp_hp > 0:
 		return 0
-	return (my_hp - opp_hp) * settings.ROUND_REWARD_CONSTANT
+	return (my_hp - opp_hp) / max(settings.HP.values())
 
 
 def is_round_over(state):

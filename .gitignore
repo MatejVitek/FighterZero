@@ -29,6 +29,7 @@ hs_err_pid*
 .project
 .settings
 bin
+data/networks/*_[0-9]*.h5
 data/ai/*
 !.gitkeep
 data/aiData/*

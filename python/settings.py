@@ -20,8 +20,6 @@ VALID_MOVES = {
 }
 ALL_MOVES = GROUND_MOVES + AIR_MOVES + ('NEUTRAL',)
 
-ROUNDS = 3
-ROUND_TIME = 60
 FPS = 60
 COMBO_LIMIT = 30
 MAX_SPEEDX = 35
@@ -32,59 +30,73 @@ ATT_MAX_ENERGY = 60
 ATT_MAX_GUARD_REC = 30
 ATT_MAX_DMG = 300
 ATT_MAX_IMPACT = 30
+STAGE_WIDTH = 960
+STAGE_HEIGHT = 640
+
 
 # Game settings
 # 'RND' for full random, random.choice(C) for initial random
 CHARS = {P[0]: 'ZEN', P[1]: 'ZEN'}
-GAME_NUM = 100
+GAME_NUM = 500
+ROUNDS = 3
+ROUND_TIME = 30
+LIMIT_HP = True
 HP = {P[0]: 400, P[1]: 400}
 
 
-# AI Constants
-DEF_NN_FILE = "MyNN.h5"
-
-# AI Settings
-AI = {P[0]: 'LearnAI', P[1]: 'LearnAI'}
-INI_FILES = {P[0]: None, P[1]: None}
-SAVE_FILES = {P[0]: None, P[1]: None}
-SAVE_FILE = DEF_NN_FILE
-
-
 # NN Constants
-''' OLD SIZES:
+# DataNN
 DEF_SIZE = 1
 FD_SIZE = 2
 CD_SIZE = 70
 AD_SIZE = 25
 MAX_PROJ = 3
-INPUT_SIZE = DEF_SIZE + FD_SIZE + 2 * CD_SIZE + (2 * MAX_PROJ + 1) * AD_SIZE
-'''
-INPUT_SIZE = 6
+# INPUT_SIZE = DEF_SIZE + FD_SIZE + 2 * CD_SIZE + (1 + 2 * MAX_PROJ) * AD_SIZE  # OLD SIZE
+INPUT_SIZE = 8
 
 # NN Settings
-HIDDEN_LAYERS = 4
+NN = 'ImageNN'
 REG_CONST = 1e-4
-DROPOUT_RATE = 0.  # 0.1
-LEARNING_RATE = 0.1
-MOMENTUM = 0.9
+DROPOUT_RATE = 0  # If 0, dropout layers won't be used. (old value: 0.1)
+LEARNING_RATE = .1
+MOMENTUM = .9
+# DataNN
+HIDDEN_LAYERS = 2
+# ImageNN
+IMAGE_WIDTH = STAGE_WIDTH // 10
+IMAGE_HEIGHT = STAGE_HEIGHT // 10
+CHANNELS = 128
+FIRST_FILTER_SIZE = 7
+FILTER_SIZE = 3
+RES_LAYERS = 2
+
+
+# AI Constants
+DEF_NN_FILE = f"My{NN}.h5"
+
+# AI Settings
+AI = {P[0]: 'LearnAI', P[1]: 'LearnAI'}
+INI_FILES = {P[0]: None, P[1]: None}
+SAVE_FILES = {P[0]: DEF_NN_FILE, P[1]: DEF_NN_FILE}
 
 
 # MCTS & Learning Constants
 EPS = 1e-6
-TIME_LIMIT = 5 * (1 / FPS - 1e-3)
 
 # MCTS & Learning Settings
+TIME_LIMIT = 5 * (1 / FPS - 1e-3)
 CPUCT = 1.
-TEMP = 1.
-STEP_FRAMES = 4
+TEMP = 2.
+STEP_FRAMES = 15
 STR_REP_DEPTH = 2
-ROUND_REWARD_CONSTANT = 1.
-GAME_REWARD_EXTRA = max(HP.values()) / 8.
+ROUND_REWARD_WEIGHT = .8
+EPOCHS = 10
+BATCH_SIZE = 32
 
 
 # Java constants
 JVM = None
-ARG_LIMIT_HP = f' --limithp {HP[P[0]]} {HP[P[1]]}'
+ARG_HP = lambda: f' --limithp {HP[P[0]]} {HP[P[1]]}' if LIMIT_HP else ''
 ARG_MUTE = ' --mute'
 ARG_FAST = ' --fastmode'
 ARG_BLACK = ' --black-bg'
@@ -92,12 +104,16 @@ ARG_GREY = ' --grey-bg'
 ARG_INVERT1 = ' --inverted-player 1'
 ARG_INVERT2 = ' --inverted-player 2'
 ARG_TRAINING = ' -t'
+ARG_TIME = lambda: f' --time {ROUND_TIME}'
+ARG_ROUNDS = lambda: f' -r {ROUNDS}'
 
-ARGS_PLAY = ARG_LIMIT_HP + ARG_MUTE
-ARGS_LEARN = ARG_LIMIT_HP + ARG_FAST
-ARGS_COMPETITION = ARG_LIMIT_HP + ARG_GREY + ARG_INVERT1
+ARGS_PLAY = lambda: ARG_HP() + ARG_MUTE
+ARGS_LEARN = lambda: ARG_HP() + ARG_FAST  # Don't use with screenData-reliant methods
+ARGS_COMPETITION = lambda: ARG_HP() + ARG_GREY + ARG_INVERT1 + ARG_MUTE
+ARGS_ROUND_SETTINGS = lambda: ARG_TIME() + ARG_ROUNDS()
 
 # Java settings
-# Can't use ARG_LIMIT_HP - no good way of dealing with game hanging
-JAVA_ARGS = ARG_GREY + ARG_INVERT2
+JAVA_ARGS = lambda: ARGS_COMPETITION() + ARGS_ROUND_SETTINGS()
 PORT = 4242
+
+

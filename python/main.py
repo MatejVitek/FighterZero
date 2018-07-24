@@ -1,7 +1,9 @@
-import sys
-import os
-import subprocess
 import argparse
+import os
+import random
+import shutil
+import subprocess
+import sys
 
 import settings
 from settings import P
@@ -38,7 +40,7 @@ def main():
 def start_java_server():
 	print("Starting Java server...")
 	os.chdir('..\\')
-	return subprocess.Popen(JAVA_CMD + settings.JAVA_ARGS, stdout=subprocess.PIPE, universal_newlines=True)
+	return subprocess.Popen(JAVA_CMD + settings.JAVA_ARGS(), stdout=subprocess.PIPE, universal_newlines=True)
 
 
 def wait_for_server():
@@ -69,6 +71,11 @@ def process_command_line_options():
 	ap.add_argument('-s', '--save', help="save better NN to specified file at the end (for use with LearnAI)")
 	ap.add_argument('-s1', '--save1', help="save P1's NN to specified file at the end (for use with LearnAI)")
 	ap.add_argument('-s2', '--save2', help="save P2's NN to specified file at the end (for use with LearnAI)")
+	ap.add_argument('-t', '--time', '--round-time', help="time limit per round")
+	ap.add_argument('-r', '--rounds', help="number of rounds per game")
+	ap.add_argument('-hp', '--hp', '--HP')
+	ap.add_argument('-hp1', '--hp1', '--HP1', help="P1's HP")
+	ap.add_argument('-hp2', '--hp2', '--HP2', help="P2's HP")
 
 	args = ap.parse_args()
 
@@ -78,74 +85,88 @@ def process_command_line_options():
 		settings.CHARS[P[0]] = args.character1
 	if args.character2:
 		settings.CHARS[P[1]] = args.character2
+	if args.time:
+		settings.ROUND_TIME = args.time
+	if args.rounds:
+		settings.ROUNDS = args.rounds
+	if args.hp:
+		settings.LIMIT_HP = True
+		settings.HP[P[0]] = args.hp
+		settings.HP[P[1]] = args.hp
+	if args.hp1:
+		settings.LIMIT_HP = True
+		settings.HP[P[0]] = args.hp1
+	if args.hp2:
+		settings.LIMIT_HP = True
+		settings.HP[P[1]] = args.hp2
 
 	if args.learn:
 		for p in P:
 			settings.AI[p] = LearnAI
 			settings.INI_FILES[p] = None
-			settings.SAVE_FILES[p] = None
-			settings.SAVE_FILE = settings.DEF_NN_FILE
+			settings.SAVE_FILES[p] = settings.DEF_NN_FILE
 	elif args.play:
 		for p in P:
 			settings.AI[p] = PlayAI
 			settings.INI_FILES[p] = settings.DEF_NN_FILE
 			settings.SAVE_FILES[p] = None
-			settings.SAVE_FILE = None
 	else:
-		if args.ai1:
-			settings.AI[P[0]] = args.ai1
-			settings.INI_FILES[P[0]] = None
-			settings.SAVE_FILES[P[0]] = settings.DEF_NN_FILE
-			settings.SAVE_FILE = None
-		if args.ai2:
-			settings.AI[P[1]] = args.ai2
-			settings.INI_FILES[P[1]] = None
-			settings.SAVE_FILES[P[1]] = settings.DEF_NN_FILE
-			settings.SAVE_FILE = None
+		for (p, ai) in zip(P, (args.ai1, args.ai2)):
+			if ai:
+				settings.AI[p] = resolve_import_name(ai)
+				settings.SAVE_FILES[p] = settings.DEF_NN_FILE
+				if ai == PlayAI:
+					settings.INI_FILES[p] = settings.DEF_NN_FILE
+				else:
+					settings.INI_FILES[p] = None
 
 	if args.file:
 		for p in P:
-			settings.INI_FILES[p] = args.file
-		settings.SAVE_FILE = args.file
+			settings.INI_FILES[p] = settings.SAVE_FILES[p] = args.file
 	else:
-		if args.file1:
-			settings.INI_FILES[P[0]] = settings.SAVE_FILES[P[0]] = args.file1
-		if args.file2:
-			settings.INI_FILES[P[1]] = settings.SAVE_FILES[P[1]] = args.file2
+		for (p, f) in zip(P, (args.file1, args.file2)):
+			if f:
+				settings.INI_FILES[p] = settings.SAVE_FILES[p] = f
 
 	if args.save:
-		settings.SAVE_FILE = args.save
-	if args.save1:
-		settings.SAVE_FILES[P[0]] = args.save1
-	if args.save2:
-		settings.SAVE_FILES[P[1]] = args.save2
+		for p in P:
+			settings.SAVE_FILES[p] = args.save
+	for (p, f) in zip(P, (args.save1, args.save2)):
+		if f:
+			settings.SAVE_FILES[p] = f
+
+	global final_save
+	final_save = ''
+	if all(ai == LearnAI for ai in settings.AI) and settings.SAVE_FILES[P[0]] == settings.SAVE_FILES[P[1]]:
+		final_save = settings.SAVE_FILES[P[0]]
+		name, ext = os.path.splitext(final_save)
+		for p in P:
+			settings.SAVE_FILES[p] = f'{name}_P{1 if p else 2}{ext}'
 
 
 def run_game():
 	print("Setting up game...")
 
-	temp_save = {P[0]: False, P[1]: False}
 	for p in P:
 		if isinstance(settings.AI[p], str):
 			settings.AI[p] = resolve_import_name(settings.AI[p])
-		if settings.AI[p] == LearnAI and settings.SAVE_FILES[p] is None:
-			temp_save[p] = True
-			settings.SAVE_FILES[p] = settings.SAVE_FILE[::-1].replace('.', f".{1 if p else 2}P_", 1)[::-1]
 		if settings.AI[p] in (LearnAI, PlayAI):
-			manager.registerAI(settings.AI[p].__name__, settings.AI[p]())
+			manager.registerAI(settings.AI[p].__name__, settings.AI[p](settings.INI_FILES[p]))
 		else:
 			manager.registerAI(settings.AI[p].__name__, settings.AI[p](gateway))
 
+	os.chdir('.\\data\\networks')
 	chars, ais = zip(*((settings.CHARS[p], settings.AI[p].__name__) for p in P))
 	game = manager.createGame(*chars, *ais, settings.GAME_NUM)
 	print("Game starting...")
 	manager.runGame(game)
 
-	if all(settings.AI[p] == LearnAI for p in P) and settings.SAVE_FILE is not None:
-		save_better_network(settings.SAVE_FILE, *(settings.SAVE_FILES[p] for p in P))
-	for p in P:
-		if temp_save[p]:
-			os.remove(settings.SAVE_FILES[p])
+	if final_save:
+		shutil.copyfile(latest_file(random.choice(settings.SAVE_FILES[P[0]], settings.SAVE_FILES[P[1]])), final_save)
+	else:
+		for p in P:
+			if settings.AI[p] == LearnAI:
+				shutil.copyfile(latest_file(settings.SAVE_FILES[p]), settings.SAVE_FILES[p])
 
 	print("Game ending.")
 	sys.stdout.flush()
@@ -157,8 +178,17 @@ def resolve_import_name(name):
 	return getattr(importlib.import_module(m), c)
 
 
-def save_better_network(save, nn1, nn2):
-	pass
+def latest_file(base, dir='.'):
+	base_name, base_ext = os.path.splitext(base)
+	max_f, max_n = None, -1
+	for f in os.listdir(dir):
+		name, ext = os.path.splitext(f)
+		if name.startswith(base_name) and ext == base_ext:
+			n = int(name[len(base_name)+1:])
+			if n > max_n:
+				max_f = name + ext
+				max_n = n
+	return max_f
 
 
 def close_gateway():
@@ -167,7 +197,8 @@ def close_gateway():
 
 
 def close_server():
-	server.kill()
+	server.terminate()
+	server.wait()
 
 
 if __name__ == '__main__':
