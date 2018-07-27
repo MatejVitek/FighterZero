@@ -37,7 +37,7 @@ STAGE_HEIGHT = 640
 # Game settings
 # 'RND' for full random, random.choice(C) for initial random
 CHARS = {P[0]: 'ZEN', P[1]: 'ZEN'}
-GAME_NUM = 500
+GAME_NUM = 9
 ROUNDS = 3
 ROUND_TIME = 30
 LIMIT_HP = True
@@ -55,7 +55,7 @@ MAX_PROJ = 3
 INPUT_SIZE = 8
 
 # NN Settings
-NN = 'ImageNN'
+NN = 'DataNN'
 REG_CONST = 1e-4
 DROPOUT_RATE = 0  # If 0, dropout layers won't be used. (old value: 0.1)
 LEARNING_RATE = .1
@@ -76,7 +76,7 @@ DEF_NN_FILE = f"My{NN}.h5"
 
 # AI Settings
 AI = {P[0]: 'LearnAI', P[1]: 'LearnAI'}
-INI_FILES = {P[0]: None, P[1]: None}
+INI_FILES = {P[0]: DEF_NN_FILE, P[1]: DEF_NN_FILE}
 SAVE_FILES = {P[0]: DEF_NN_FILE, P[1]: DEF_NN_FILE}
 
 
