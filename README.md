@@ -1,3 +1,11 @@
+# About
+
+This repository contains an altered version of the FightingICE engine for the FighTing Game AI Competition (FTGAIC). The alterations were made purely for research purposes as permitted by licencing information provided on the FTGAIC website (link provided below). No grant, funding or other monetary compensation was received for this purpose. All rights go to the original creators of the engine, Intelligent Computer Entertainment Lab., Ritsumeikan University.
+
+The files directly under .\python\ (with the exception of KickAI, Machete and readme) and .\data\networks\ are original products and distributed under the GNU General Public Licence (see https://www.gnu.org/licenses/gpl-3.0.en.html for more information).
+
+Below is a copy of the Readme file of the original FightingICE repository.
+
 # FightingICE #
 
 このリポジトリは、格闘ゲームAIの性能を競う国際大会に使用されている2D格闘ゲームFightingICEの開発用リポジトリです。<br>
