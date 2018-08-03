@@ -55,7 +55,7 @@ MAX_PROJ = 3
 INPUT_SIZE = 8
 
 # NN Settings
-NN = 'DataNN'
+NN = 'ImageNN'
 REG_CONST = 1e-4
 DROPOUT_RATE = 0  # If 0, dropout layers won't be used. (old value: 0.1)
 LEARNING_RATE = .1
